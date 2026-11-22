@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rza Clipper</title>
+    <link rel="icon" type="image/svg+xml" href="./assets/icon.svg" />
+    <script>
+      ;(function () {
+        try {
+          var theme = window.settings?.getThemeSync?.()
+          if (!theme) {
+            var raw = localStorage.getItem('rzaclipper:settings')
+            theme = raw ? JSON.parse(raw).theme : 'system'
+          }
+          var isDark =
+            theme === 'dark' ||
+            (theme !== 'light' &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches)
+          var root = document.documentElement
+          if (isDark) {
+            root.classList.add('dark')
+            root.classList.remove('light')
+          } else {
+            root.classList.add('light')
+            root.classList.remove('dark')
+          }
+        } catch (_) {}
+      })()
+    </script>
+    <style>
+      :root {
+        color-scheme: light;
+        background: #ffffff;
+      }
+      :root.dark {
+        color-scheme: dark;
+        background: oklch(0.145 0 0);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not(.light) {
+          color-scheme: dark;
+          background: oklch(0.145 0 0);
+        }
+      }
+      #splash {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--background, #ffffff);
+        z-index: 9999;
+        transition: opacity 200ms ease;
+      }
+      :root.dark #splash {
+        background: var(--background, oklch(0.145 0 0));
+      }
+      #splash.is-hiding {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .splash-icon {
+        width: 100px;
+        height: 100px;
+        object-fit: contain;
+        opacity: 0.7;
+        animation: splash-pulse 1.4s ease-in-out infinite;
+      }
+      :root.dark .splash-icon {
+        filter: invert(1);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .splash-icon {
+          animation: none;
+        }
+      }
+      @keyframes splash-pulse {
+        0%,
+        100% {
+          opacity: 0.5;
+          transform: scale(0.95);
+        }
+        50% {
+          opacity: 0.75;
+          transform: scale(1);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app" class="h-svh"></div>
+    <div id="splash">
+      <img src="./assets/icon.svg" id="splash-icon" class="splash-icon" alt="Rza Clipper" />
+    </div>
+    <script type="module" src="/src/renderer/main.tsx"></script>
+  </body>
+</html>
